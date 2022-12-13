@@ -1,51 +1,51 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-    fetchData()
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form')
+    form.addEventListener('submit', e => {
+        e.preventDefault()
+        const users = form.search.value
+        getGitUser(users)
+        form.reset()
+    })
 })
-
-
-function fetchRepo(element){
-    fetch(`https://api.github.com/users/${element.login}/repos`)
-    .then(response => response.json())
-    .then(data => {
-        const repos = document.querySelector('#repos-list')
-        data.forEach(element => {
-            const li = document.createElement('li')
-            li.innerText = element.full_name
-            repos.appendChild(li)
-        })
+function getGitUser(username){
+    fetch('https://api.github.com/search/users?q=${username}', {method: 'GET', headers: {
+        Accept: 'application/vnd.github.v3+json'
+    }}).then(res => res.json()).then(data => {
+        const users = data.items
+        users.forEach(user => {
+            userList(user)
+        });
     })
 }
-function fetchData(){
-    fetch('https://api.github.com/search/users?q=octocat', {
-        method: "GET",
-        headers:{
-            "Content-Type": "application/json",
-            Accept: "application/vnd.github.v3+json" 
-        }
+function getUserRepos(url){
+    fetch(url, {method: 'GET', headers: {
+        Accept: 'application/vnd.github.v3+json'
+    }}).then(res => res.json()).then(data => userRepos(data))
+}
+function userList(user){
+    const userUl = document.getElementById('user-list')
+    const userLi = document.createElement('li')
+    userLi.style.padding = '15px'
+    userLi.innerHTML =
+    `
+    <img src='${user.avatar_url}' width='100' height='100' alt='avatar' />
+    <h2 id='${user.login}'>${user.login}</h2>
+    `
+    userUl.appendChild(userLi)
+    document.getElementById(${user.login}).addEventListener('click', () => {
+        const repoUrl = ${user.repos_url}
+        getUserRepos(repoUrl)
     })
-    .then(response => response.json())
-    .then(data => {
-        const p = document.querySelector('#github-form')
-        p.addEventListener('submit', (event) => {
-            event.preventDefault()
-            let user = document.getElementById('search').value
-            data.items.forEach( element => {
-                if(user === element.login){
-                    const userList = document.getElementById('user-list')
-                    userList.insertAdjacentHTML('beforeend', 
-                    `<img src="${element.avatar_url}" class="avatar_image">
-                    <h3><a href='javascript:;' id="link");'>${element.login}</a></h3>
-                    <p>Page URL: ${element.html_url}</p>`)
-                    document.querySelector('#link').addEventListener('click', () => {
-                        fetchRepo(element)
-                    })
-                }
-                
-            }) 
-            p.reset()
-            });  
-        })
-    }
+}
+function userRepos(repos){
+    const reposUl = document.getElementById('repos-list')
+    repos.map(repo => {
+        const reposLi = document.createElement('li')
+        reposLi.textContent = repo.name
+        console.log(repo.name);
+        reposUl.appendChild(reposLi)
+    })
+}
 
 
 
