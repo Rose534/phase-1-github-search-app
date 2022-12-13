@@ -32,8 +32,8 @@ function userList(user){
     <h2 id='${user.login}'>${user.login}</h2>
     `
     userUl.appendChild(userLi)
-    document.getElementById(${user.login}).addEventListener('click', () => {
-        const repoUrl = ${user.repos_url}
+    document.getElementById('${user.login}').addEventListener('click', () => {
+        const repoUrl = '${user.repos_url}'
         getUserRepos(repoUrl)
     })
 }
